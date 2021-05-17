@@ -15,6 +15,7 @@ app.use(express.urlencoded({limit:'25mb',extended:true}))
 
 
 // Rutas
+app.get('/',(req,res)=>res.send('API Curso FH'));
 app.use('/api/usuarios',require('./routes/usuarios.router'));
 app.use('/api/hospitales',require('./routes/hospitales.router'));
 app.use('/api/medicos',require('./routes/medicos.router'));
