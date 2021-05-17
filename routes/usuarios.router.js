@@ -7,9 +7,9 @@ const {getUsuarios,crearUsuario,actualizarUsuario,borrarUsuario} = require('../c
 const { validarJwt } = require('../middelwares/jwt/validarJwt');
 const router = Router();
 
-router.get('/getUsers',validarJwt,getUsuarios);
+router.get('/',validarJwt,getUsuarios);
 
-router.post('/createUser',
+router.post('/',
 [   
     validarJwt,
     check('nombre','El nombre es obligatorio').not().isEmpty(),
@@ -18,7 +18,7 @@ router.post('/createUser',
     validarCampos
 ],crearUsuario);
 
-router.put('/updateUser/:id',
+router.put('/:id',
 [
     validarJwt,
     check('nombre','El nombre es obligatorio').not().isEmpty(),
@@ -27,5 +27,5 @@ router.put('/updateUser/:id',
     validarCampos
 ],actualizarUsuario);
 
-router.delete('/deleteUser/:id',validarJwt,borrarUsuario)
+router.delete('/:id',validarJwt,borrarUsuario)
 module.exports = router;

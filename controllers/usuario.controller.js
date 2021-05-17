@@ -1,15 +1,24 @@
 const { response } = require('express');
-const bcrypt =  require('bcryptjs');
+const bcrypt = require('bcryptjs');
 
 const Usuario = require('../models/usuario.model');
 const { generarJwt } = require('../helpers/jwt.helper');
 
 const getUsuarios = async (req, res) => {
 
-    const usuarios = await Usuario.find({}, 'nombre email role google');
+    const desde = Number(req.query.desde) || 0;
 
+    const [usuarios,total] =await Promise.all(
+        [
+            Usuario.find({}, 'nombre email role google')
+                .skip(desde)
+                .limit(5),
+            Usuario.count()
+        ]
+    );
     res.status(400).json({
         ok: true,
+        total,
         usuarios
     });
 }
@@ -19,12 +28,12 @@ const crearUsuario = async (req, res = response) => {
 
     try {
 
-        const existeEmail = await Usuario.findOne({email});
+        const existeEmail = await Usuario.findOne({ email });
 
-        if(existeEmail){
+        if (existeEmail) {
             return res.status(400).json({
-                ok:false,
-                meg:'El correo ya está registrado'
+                ok: false,
+                meg: 'El correo ya está registrado'
             });
         }
 
@@ -33,13 +42,13 @@ const crearUsuario = async (req, res = response) => {
         // Encriptar Contraseña
         const salt = bcrypt.genSaltSync();
 
-        usuario.password = bcrypt.hashSync(password,salt);
+        usuario.password = bcrypt.hashSync(password, salt);
 
         // Guardar usuario
         await usuario.save();
 
         const token = await generarJwt(usuario.id);
-        
+
         res.status(200).json({
             ok: true,
             usuario,
@@ -50,77 +59,77 @@ const crearUsuario = async (req, res = response) => {
         res.status(500).json({
             ok: false,
             msg: 'Error inesperado '
-        })
+        });
     }
 }
 
-const actualizarUsuario = async(req,res=response)=>{
+const actualizarUsuario = async (req, res = response) => {
     //TODO: Validar token y comprobar si el usuario correcto
     const uid = req.params.id;
-    
+
     try {
         const usuarioDB = await Usuario.findById(uid);
-        if(!usuarioDB){
+        if (!usuarioDB) {
             return res.status(404).json({
-                ok:false,
-                msg:'No existe un usuario con ese ID'
+                ok: false,
+                msg: 'No existe un usuario con ese ID'
             })
         }
 
         // Actualizaciones
-        const {password,google,email,...campos} = req.body;
+        const { password, google, email, ...campos } = req.body;
 
-        if(usuarioDB.email !== email){
-            const existeEmail = await Usuario.findOne({email});
-            if(existeEmail){
+        if (usuarioDB.email !== email) {
+            const existeEmail = await Usuario.findOne({ email });
+            if (existeEmail) {
                 return res.status(400).json({
-                    ok:false,
-                    msg:'No existe un usuario con este email'
+                    ok: false,
+                    msg: 'No existe un usuario con este email'
                 })
             }
         }
 
         campos.email = email;
 
-        const usuarioActualizado = await Usuario.findByIdAndUpdate(uid,campos,{new:true});
+        const usuarioActualizado = await Usuario.findByIdAndUpdate(uid, campos, { new: true });
 
-        
+
         res.json({
-            ok:true,
-            usuario:usuarioActualizado
+            ok: true,
+            usuario: usuarioActualizado
         })
 
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            ok:false,
-            msg:'Error inesperado'
+            ok: false,
+            msg: 'Error inesperado'
         });
     }
 }
 
-const borrarUsuario = async(req,res=response)=>{
+const borrarUsuario = async (req, res = response) => {
     try {
         const uid = req.params.id;
         const usuarioDB = await Usuario.findById(uid);
-        if(!usuarioDB){
+        if (!usuarioDB) {
             return res.status(404).json({
-                ok:false,
-                msg:'No existe un usuario con ese ID'
+                ok: false,
+                msg: 'No existe un usuario con ese ID'
             })
         }
 
         await Usuario.findByIdAndDelete(uid);
 
         res.json({
-            ok:true,
-            msg:'Usuario eliminado'
+            ok: true,
+            msg: 'Usuario eliminado'
         })
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            ok:false,
-            msg:'Error inesperado'
+            ok: false,
+            msg: 'Error inesperado'
         });
     }
 }

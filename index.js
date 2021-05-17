@@ -16,7 +16,11 @@ app.use(express.urlencoded({limit:'25mb',extended:true}))
 
 // Rutas
 app.use('/api/usuarios',require('./routes/usuarios.router'));
+app.use('/api/hospitales',require('./routes/hospitales.router'));
+app.use('/api/medicos',require('./routes/medicos.router'));
 app.use('/api/login',require('./routes/auth.router'));
+app.use('/api/todo',require('./routes/busquedas.router'));
+app.use('/api/uploads',require('./routes/uploads.router'));
 
 // Coneccion de base de datos y levantamiento del servidor
 dbConnection().then(()=>{
