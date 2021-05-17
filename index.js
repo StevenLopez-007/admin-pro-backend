@@ -26,6 +26,9 @@ app.use('/api/uploads',require('./routes/uploads.router'));
 dbConnection().then(()=>{
     app.listen(process.env.PORT,()=>{
         console.log('Servidor corriendo '+process.env.PORT);
+
+        // Directorio Publico
+        // app.use(express.static('public'))
     });
 }).catch((e)=>{
     console.log(e)

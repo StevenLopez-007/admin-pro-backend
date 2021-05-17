@@ -14,7 +14,7 @@ router.post('/',
     validarJwt,
     check('nombre','El nombre es obligatorio').not().isEmpty(),
     check('password','La contraseña es obligatoria').not().isEmpty(),
-    check('email','El E-mail es obligatorio').isEmail(),
+    check('email','El E-mail es invalido').isEmail(),
     validarCampos
 ],crearUsuario);
 
