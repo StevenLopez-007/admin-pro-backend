@@ -19,7 +19,7 @@ router.post('/google',
     validarCampos
 ],googleSignIn)
 
-router.post('/refreshToken',
+router.get('/refreshToken',
 [
     validarJwt
 ],refreshToken)

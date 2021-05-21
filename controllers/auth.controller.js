@@ -94,9 +94,18 @@ const refreshToken = async(req,res=response)=>{
 
     const token = await generarJwt(uid);
 
+    const usuario  = await Usuario.findById(uid);
+    if(!usuario){
+        return res.status(400).json({
+            ok:false,
+            msg:'El token no pertenece a ningun usuario'
+        });
+    }
+
     res.json({
         ok:true,
-        token
+        token,
+        usuario
     })
 }
 

@@ -10,13 +10,14 @@ const getUsuarios = async (req, res) => {
 
     const [usuarios,total] =await Promise.all(
         [
-            Usuario.find({}, 'nombre email role google')
+            Usuario.find({}, 'nombre email role google img')
                 .skip(desde)
                 .limit(5),
             Usuario.count()
         ]
     );
-    res.status(400).json({
+    console.log(usuarios)
+    res.json({
         ok: true,
         total,
         usuarios
@@ -66,7 +67,6 @@ const crearUsuario = async (req, res = response) => {
 const actualizarUsuario = async (req, res = response) => {
     //TODO: Validar token y comprobar si el usuario correcto
     const uid = req.params.id;
-
     try {
         const usuarioDB = await Usuario.findById(uid);
         if (!usuarioDB) {
@@ -84,12 +84,19 @@ const actualizarUsuario = async (req, res = response) => {
             if (existeEmail) {
                 return res.status(400).json({
                     ok: false,
-                    msg: 'No existe un usuario con este email'
+                    msg: 'Ya existe un usuario con este email'
                 })
             }
         }
 
-        campos.email = email;
+        if(!usuarioDB.google){
+            campos.email = email;
+        }else if(usuarioDB.email !== email){
+            return res.status(400).json({
+                ok: false,
+                msg: 'Un usuario de Google no puede cambiar el E-mail'
+            });
+        }
 
         const usuarioActualizado = await Usuario.findByIdAndUpdate(uid, campos, { new: true });
 

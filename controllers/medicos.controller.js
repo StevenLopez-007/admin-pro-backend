@@ -9,6 +9,33 @@ const getMedicos = async (req, res = response) => {
     })
 }
 
+const getMedico = async (req, res = response) => {
+    const id = req.params.id;
+
+    try {
+        const medico = await Medico.findById(id).populate('usuario', 'nombre img').populate('hospital', 'nombre img');
+
+        if (!medico) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'El medico no existe'
+            });
+        }
+
+        return res.json({
+            ok: true,
+            medico
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        })
+    }
+
+}
+
 const crearMedico = async (req, res = response) => {
     const medico = new Medico({
         usuario: req.uid,
@@ -54,8 +81,7 @@ const actualizarMedico = async (req, res = response) => {
 
 
         res.json({
-            ok: true,
-            msg: 'Medico actualizado',
+            ok: true, 
             hospitalActualizado
         })
     } catch (error) {
@@ -70,7 +96,7 @@ const borrarMedico = async (req, res = response) => {
     try {
         const id = req.params.id;
 
-        const medico = Medico.findById(id);
+        const medico = await Medico.findById(id);
 
         if (!medico) {
             return res.status(400).json({
@@ -83,10 +109,10 @@ const borrarMedico = async (req, res = response) => {
 
         res.json({
             ok: true,
-            msg: 'Medico borrado',
-            hospitalActualizado
+            msg: 'Medico borrado'
         })
     } catch (error) {
+        console.log(error)
         res.status(500).json({
             ok: false,
             msg: 'Hable con el administrador'
@@ -99,5 +125,6 @@ module.exports = {
     getMedicos,
     crearMedico,
     actualizarMedico,
-    borrarMedico
+    borrarMedico,
+    getMedico
 }

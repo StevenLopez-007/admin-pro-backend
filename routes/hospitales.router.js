@@ -15,7 +15,7 @@ const {
 const router = Router();
 
 
-router.get('/',getHospitales);
+router.get('/',validarJwt,getHospitales);
 
 router.post('/',
 [  
