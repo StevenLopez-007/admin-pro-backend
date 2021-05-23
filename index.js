@@ -1,5 +1,5 @@
 require('dotenv').config();
-
+const path = require('path');
 const express  = require('express');
 const {dbConnection} = require('./database/config')
 const cors = require('cors');
@@ -15,11 +15,6 @@ app.use(express.urlencoded({limit:'25mb',extended:true}))
 
 
 // Rutas
-// app.get('/',(req,res)=>res.send('API Curso FH'));
-// Lo último
-app.get('*', (req, res) => {
-    res.sendFile( path.resolve( __dirname, 'public/index.html' ) );
-});
 app.use('/api/usuarios',require('./routes/usuarios.router'));
 app.use('/api/hospitales',require('./routes/hospitales.router'));
 app.use('/api/medicos',require('./routes/medicos.router'));
@@ -33,7 +28,10 @@ dbConnection().then(()=>{
         console.log('Servidor corriendo '+process.env.PORT);
 
         // Directorio Publico
-        app.use(express.static('public'))
+        app.use(express.static('public'));
+        app.get('*', (req, res) => {
+            res.sendFile( path.resolve( __dirname, 'public/index.html' ) );
+        });
     });
 }).catch((e)=>{
     console.log(e)
