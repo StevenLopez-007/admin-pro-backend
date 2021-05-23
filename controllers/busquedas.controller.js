@@ -10,7 +10,7 @@ const getTodo = async (req, res = response) => {
 
     const regex = new RegExp(buscar, 'i');
 
-    const [usuarios, medicos, hospital] = await Promise.all([
+    const [usuarios, medicos, hospitales] = await Promise.all([
         Usuario.find({ nombre: regex }),
         Medico.find({ nombre: regex }).populate('usuario', 'nombre email img'),
         Hospital.find({ nombre: regex }).populate('usuario', 'nombre email img')
@@ -20,7 +20,7 @@ const getTodo = async (req, res = response) => {
         ok: true,
         usuarios,
         medicos,
-        hospital
+        hospitales
     });
 }
 
