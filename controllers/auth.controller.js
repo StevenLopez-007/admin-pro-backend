@@ -91,6 +91,48 @@ const googleSignIn = async(req,res=response)=>{
     }
 } 
 
+const facebookSignIn = async(req,res=response)=>{
+    try {
+
+        const {name,email,picture} = req.user;
+        const usuarioDB = await Usuario.findOne({email});
+
+       let usuario;
+
+       if(!usuarioDB){
+        //    Si no existe el usuario
+           usuario  = new Usuario({
+               nombre:name,
+               email,
+               password:'@@@',
+               img:picture,
+               facebook:true
+           })
+       }else{
+        //    Existe Usuairo
+            usuario = usuarioDB;
+            usuario.facebook =true;
+       }
+    //    Guardar usuairo
+
+    await  usuario.save();
+    // Generar token
+    const token = await generarJwt(usuario.id);
+
+    res.json({
+        ok:true,
+        token,
+        menu: getMenuFrontEnd(usuario.role)
+    })
+    } catch (error) {
+        console.log(error)
+        res.status(401).json({
+            ok:true,
+            msg:'Token no es correcto'
+        })
+    }
+} 
+
 const refreshToken = async(req,res=response)=>{
 
     const uid = req.uid;
@@ -116,5 +158,6 @@ const refreshToken = async(req,res=response)=>{
 module.exports ={
     login,
     googleSignIn ,
+    facebookSignIn,
     refreshToken  
 }

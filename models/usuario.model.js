@@ -6,7 +6,8 @@ const usuarioSchema = Schema({
     password:{type:String,required:true},
     img:{type:String},
     role:{type:String,default:'USER_ROLE'},
-    google:{type:Boolean,default:false}
+    google:{type:Boolean,default:false},
+    facebook:{type:Boolean,default:false}
 });
 
 usuarioSchema.method('toJSON',function(){
